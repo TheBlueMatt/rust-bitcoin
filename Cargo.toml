@@ -27,7 +27,7 @@ rust-crypto = "0.2"
 rustc-serialize = "0.3"
 serde = "0.6"
 strason = "0.3"
-bitcoinconsensus = { version = "0.16", optional=true }
+bitcoinconsensus = { path = "../rust-bitcoinconsensus", optional=true }
 
 [dependencies.secp256k1]
 version = "0.9"
