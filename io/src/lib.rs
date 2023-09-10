@@ -179,4 +179,19 @@ pub mod io {
             <W as core2::io::Write>::flush(self)
         }
     }
+
+    /// A sink to which all writes succeed. See [`std::io::Sink`] for more info.
+    pub struct Sink;
+    impl Write for Sink {
+        #[inline]
+        fn write(&mut self, buf: &[u8]) -> Result<usize> {
+            Ok(buf.len())
+        }
+        #[inline]
+        fn flush(&mut self) -> Result<()> {
+            Ok(())
+        }
+    }
+    /// Returns a sink to which all writes succeed. See [`std::io::sink`] for more info.
+    pub fn sink() -> Sink { Sink }
 }
