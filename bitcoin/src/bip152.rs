@@ -73,8 +73,8 @@ impl convert::AsRef<Transaction> for PrefilledTransaction {
 
 impl Encodable for PrefilledTransaction {
     #[inline]
-    fn consensus_encode<S: io::Write + ?Sized>(&self, mut s: &mut S) -> Result<usize, io::Error> {
-        Ok(VarInt::from(self.idx).consensus_encode(&mut s)? + self.tx.consensus_encode(&mut s)?)
+    fn consensus_encode<S: io::Write + ?Sized>(&self, s: &mut S) -> Result<usize, io::Error> {
+        Ok(VarInt::from(self.idx).consensus_encode(s)? + self.tx.consensus_encode(s)?)
     }
 }
 
@@ -260,13 +260,13 @@ impl Encodable for BlockTransactionsRequest {
     ///
     /// Panics if the index overflows [`u64::MAX`]. This happens when [`BlockTransactionsRequest::indexes`]
     /// contains an entry with the value [`u64::MAX`] as `u64` overflows during differential encoding.
-    fn consensus_encode<S: io::Write + ?Sized>(&self, mut s: &mut S) -> Result<usize, io::Error> {
-        let mut len = self.block_hash.consensus_encode(&mut s)?;
+    fn consensus_encode<S: io::Write + ?Sized>(&self, s: &mut S) -> Result<usize, io::Error> {
+        let mut len = self.block_hash.consensus_encode(s)?;
         // Manually encode indexes because they are differentially encoded VarInts.
-        len += VarInt(self.indexes.len() as u64).consensus_encode(&mut s)?;
+        len += VarInt(self.indexes.len() as u64).consensus_encode(s)?;
         let mut last_idx = 0;
         for idx in &self.indexes {
-            len += VarInt(*idx - last_idx).consensus_encode(&mut s)?;
+            len += VarInt(*idx - last_idx).consensus_encode(s)?;
             last_idx = *idx + 1; // can panic here
         }
         Ok(len)
