@@ -81,12 +81,12 @@ impl Encodable for PrefilledTransaction {
 impl Decodable for PrefilledTransaction {
     #[inline]
     fn consensus_decode<D: io::Read + ?Sized>(
-        mut d: &mut D,
+        d: &mut D,
     ) -> Result<PrefilledTransaction, encode::Error> {
-        let idx = VarInt::consensus_decode(&mut d)?.0;
+        let idx = VarInt::consensus_decode(d)?.0;
         let idx = u16::try_from(idx)
             .map_err(|_| encode::Error::ParseFailed("BIP152 prefilled tx index out of bounds"))?;
-        let tx = Transaction::consensus_decode(&mut d)?;
+        let tx = Transaction::consensus_decode(d)?;
         Ok(PrefilledTransaction { idx, tx })
     }
 }
@@ -275,13 +275,13 @@ impl Encodable for BlockTransactionsRequest {
 
 impl Decodable for BlockTransactionsRequest {
     fn consensus_decode<D: io::Read + ?Sized>(
-        mut d: &mut D,
+        d: &mut D,
     ) -> Result<BlockTransactionsRequest, encode::Error> {
         Ok(BlockTransactionsRequest {
-            block_hash: BlockHash::consensus_decode(&mut d)?,
+            block_hash: BlockHash::consensus_decode(d)?,
             indexes: {
                 // Manually decode indexes because they are differentially encoded VarInts.
-                let nb_indexes = VarInt::consensus_decode(&mut d)?.0 as usize;
+                let nb_indexes = VarInt::consensus_decode(d)?.0 as usize;
 
                 // Since the number of indices ultimately represent transactions,
                 // we can limit the number of indices to the maximum number of
@@ -299,7 +299,7 @@ impl Decodable for BlockTransactionsRequest {
                 let mut indexes = Vec::with_capacity(nb_indexes);
                 let mut last_index: u64 = 0;
                 for _ in 0..nb_indexes {
-                    let differential: VarInt = Decodable::consensus_decode(&mut d)?;
+                    let differential: VarInt = Decodable::consensus_decode(d)?;
                     last_index = match last_index.checked_add(differential.0) {
                         Some(r) => r,
                         None => return Err(encode::Error::ParseFailed("block index overflow")),
