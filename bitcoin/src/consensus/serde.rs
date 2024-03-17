@@ -74,9 +74,7 @@ pub mod hex {
     pub struct Encoder<C: Case>(BufEncoder<{ HEX_BUF_SIZE }>, PhantomData<C>);
 
     impl<C: Case> From<super::Hex<C>> for Encoder<C> {
-        fn from(_: super::Hex<C>) -> Self {
-            Encoder(BufEncoder::new(), Default::default())
-        }
+        fn from(_: super::Hex<C>) -> Self { Encoder(BufEncoder::new(), Default::default()) }
     }
 
     impl<C: Case> super::EncodeBytes for Encoder<C> {
@@ -471,11 +469,11 @@ impl<E: fmt::Debug, I: Iterator<Item = Result<u8, E>>> BufRead for IterReader<E,
                 Some(Ok(byte)) => {
                     self.buf = Some(byte);
                     Ok(core::slice::from_ref(self.buf.as_ref().expect("we've just filled it")))
-                },
+                }
                 Some(Err(error)) => {
                     self.error = Some(error);
                     Err(io::ErrorKind::Other.into())
-                },
+                }
                 None => Ok(&[]),
             }
         }
