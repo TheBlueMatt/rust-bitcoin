@@ -128,7 +128,7 @@ impl LockTime {
 
         match *self {
             Blocks(ref h) => Ok(h.value() <= height.value()),
-            Time(time) => Err(IncompatibleHeightError { height, time })
+            Time(time) => Err(IncompatibleHeightError { height, time }),
         }
     }
 
@@ -155,7 +155,7 @@ impl LockTime {
 
         match *self {
             Time(ref t) => Ok(t.value() <= time.value()),
-            Blocks(height) => Err(IncompatibleTimeError { time, height })
+            Blocks(height) => Err(IncompatibleTimeError { time, height }),
         }
     }
 }
@@ -275,12 +275,16 @@ impl fmt::Display for Time {
 pub struct TimeOverflowError {
     /// Time value in seconds that overflowed.
     // Private because we maintain an invariant that the `seconds` value does actually overflow.
-    pub(crate) seconds: u32
+    pub(crate) seconds: u32,
 }
 
 impl fmt::Display for TimeOverflowError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} seconds is too large to be encoded to a 16 bit 512 second interval", self.seconds)
+        write!(
+            f,
+            "{} seconds is too large to be encoded to a 16 bit 512 second interval",
+            self.seconds
+        )
     }
 }
 
@@ -299,7 +303,11 @@ pub struct IncompatibleHeightError {
 
 impl fmt::Display for IncompatibleHeightError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "tried to satisfy a lock-by-blocktime lock {} with height: {}", self.time, self.height)
+        write!(
+            f,
+            "tried to satisfy a lock-by-blocktime lock {} with height: {}",
+            self.time, self.height
+        )
     }
 }
 
@@ -318,7 +326,11 @@ pub struct IncompatibleTimeError {
 
 impl fmt::Display for IncompatibleTimeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "tried to satisfy a lock-by-blockheight lock {} with time: {}", self.height, self.time)
+        write!(
+            f,
+            "tried to satisfy a lock-by-blockheight lock {} with time: {}",
+            self.height, self.time
+        )
     }
 }
 
